@@ -8,24 +8,24 @@ from django.contrib.auth.models import BaseUserManager
 class CustomersManager(BaseUserManager):
     """Helps Django work with our custom customer model."""
 
-    def create_user(self, email, first_name, password=None):
+    def create_user(self, email, first_name, last_name, password=None):
         """Creates a new user profile object."""
 
         if not email:
             raise ValueError('Users must have an email address.')
 
         email = self.normalize_email(email)
-        cust = self.model(email=email, first_name=first_name)
+        cust = self.model(email=email, first_name=first_name, last_name=last_name)
 
         cust.set_password(password)
         cust.save(using=self._db)
 
         return cust
 
-    def create_superuser(self, email, first_name, password):
+    def create_superuser(self, email, first_name, last_name, password):
         """"Creates and saves a new superuser with given details."""
 
-        cust = self.create_user(email, name, password)
+        cust = self.create_user(email, first_name, last_name, password)
 
         cust.is_superuser = True
         cust.is_staff = True
@@ -34,7 +34,7 @@ class CustomersManager(BaseUserManager):
 
         return cust
 
-class Customers(AbstractBaseUser,PermissionsMixin):
+class Customer(AbstractBaseUser,PermissionsMixin):
     """Represents customer table which has information for signup"""
 
     email = models.EmailField(max_length=255, unique=True)
@@ -46,7 +46,7 @@ class Customers(AbstractBaseUser,PermissionsMixin):
     objects = CustomersManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name']
+    REQUIRED_FIELDS = ['first_name','last_name']
 
     def get_full_name(self):
         """"Used to get a users full name."""
